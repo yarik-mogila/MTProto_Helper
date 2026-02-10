@@ -9,8 +9,9 @@
 - устанавливает зависимости на Debian/Ubuntu;
 - скачивает и собирает `TelegramMessenger/MTProxy`;
 - загружает актуальные файлы `proxy-secret` и `proxy-multi.conf`;
-- генерирует случайный секрет MTProto;
+- генерирует секрет MTProto только при первом запуске (дальше переиспользует, если не задан `ROTATE_SECRET=1`);
 - создает и запускает `systemd`-сервис `mtproxy`;
+- поддерживает `PROXY_TAG` (можно добавить/обновить позже без смены секрета);
 - выводит готовую ссылку подключения и секрет.
 
 ## Быстрый запуск
@@ -25,6 +26,24 @@ sudo bash install_mtproto.sh
 sudo PROXY_PORT=443 STATS_PORT=8888 WORKERS=2 bash install_mtproto.sh
 ```
 
+Добавить/обновить `PROXY_TAG` после регистрации прокси (секрет сохранится):
+
+```bash
+sudo PROXY_TAG=0123456789abcdef bash install_mtproto.sh
+```
+
+Принудительно сменить секрет:
+
+```bash
+sudo ROTATE_SECRET=1 bash install_mtproto.sh
+```
+
+Очистить `PROXY_TAG`:
+
+```bash
+sudo CLEAR_PROXY_TAG=1 bash install_mtproto.sh
+```
+
 ## Результат
 
 После завершения скрипт печатает:
@@ -32,6 +51,7 @@ sudo PROXY_PORT=443 STATS_PORT=8888 WORKERS=2 bash install_mtproto.sh
 - `Secret` — ваш сгенерированный MTProto секрет;
 - `Telegram link` — ссылка вида `https://t.me/proxy?...`;
 - `Direct tg:// link` — ссылка вида `tg://proxy?...`.
+- `Proxy tag` — текущий прокси-тег (если задан).
 
 ## Файлы и сервис
 
