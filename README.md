@@ -34,6 +34,6 @@ sudo PROXY_PORT=443 STATS_PORT=8888 WORKERS=2 bash install_mtproto.sh
 ## Файлы и сервис
 
 - Конфиг: `/etc/mtproxy/mtproxy.env`
+- Результат (секрет + ссылки): `/etc/mtproxy/connection.txt`
 - Unit: `/etc/systemd/system/mtproxy.service`
 - Запуск: `systemctl status mtproxy`
-

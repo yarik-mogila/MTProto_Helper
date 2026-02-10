@@ -121,6 +121,14 @@ systemctl --no-pager --full status "${SERVICE_NAME}" || true
 
 TG_LINK="tg://proxy?server=${PUBLIC_IP}&port=${PROXY_PORT}&secret=${MT_SECRET}"
 HTTP_LINK="https://t.me/proxy?server=${PUBLIC_IP}&port=${PROXY_PORT}&secret=${MT_SECRET}"
+CONNECTION_FILE="${CONFIG_DIR}/connection.txt"
+
+cat > "${CONNECTION_FILE}" <<EOF
+SECRET=${MT_SECRET}
+HTTP_LINK=${HTTP_LINK}
+TG_LINK=${TG_LINK}
+EOF
+chmod 600 "${CONNECTION_FILE}"
 
 echo "[8/8] Done."
 echo
@@ -132,4 +140,6 @@ echo "${HTTP_LINK}"
 echo
 echo "Direct tg:// link:"
 echo "${TG_LINK}"
-
+echo
+echo "Saved to:"
+echo "${CONNECTION_FILE}"
