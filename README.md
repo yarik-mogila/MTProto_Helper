@@ -2,6 +2,8 @@
 
 Скрипт для автоматической установки Telegram MTProxy (MTProto), генерации секрета и запуска через `systemd`.
 
+Важно: скрипт настраивает `kernel.pid_max=65535`, так как текущий MTProxy падает на высоких PID (assert в `common/pid.c`).
+
 ## Что делает скрипт
 
 - устанавливает зависимости на Debian/Ubuntu;
@@ -35,6 +37,7 @@ sudo PROXY_PORT=443 STATS_PORT=8888 WORKERS=2 bash install_mtproto.sh
 
 - Конфиг: `/etc/mtproxy/mtproxy.env`
 - Результат (секрет + ссылки): `/etc/mtproxy/connection.txt`
+- Sysctl fix: `/etc/sysctl.d/99-mtproxy.conf`
 - Unit: `/etc/systemd/system/mtproxy.service`
 - Запуск: `systemctl status mtproxy`
 

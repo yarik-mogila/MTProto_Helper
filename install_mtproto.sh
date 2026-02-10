@@ -18,6 +18,7 @@ MT_USER="mtproxy"
 PROXY_PORT="${PROXY_PORT:-443}"
 STATS_PORT="${STATS_PORT:-8888}"
 WORKERS="${WORKERS:-2}"
+PID_MAX_FILE="/etc/sysctl.d/99-mtproxy.conf"
 
 echo "[1/8] Installing dependencies..."
 apt-get update
@@ -41,7 +42,14 @@ if [[ ! -x "${MT_BINARY}" ]]; then
   exit 1
 fi
 
-echo "[4/8] Preparing config files..."
+echo "[4/8] Applying kernel compatibility for MTProxy (pid_max <= 65535)..."
+sysctl -w kernel.pid_max=65535 >/dev/null
+cat > "${PID_MAX_FILE}" <<EOF
+kernel.pid_max = 65535
+EOF
+sysctl --system >/dev/null || true
+
+echo "[5/8] Preparing config files..."
 mkdir -p "${CONFIG_DIR}"
 curl -fsSL https://core.telegram.org/getProxySecret -o "${CONFIG_DIR}/proxy-secret"
 curl -fsSL https://core.telegram.org/getProxyConfig -o "${CONFIG_DIR}/proxy-multi.conf"
@@ -73,7 +81,7 @@ EOF
 chmod 600 "${ENV_FILE}"
 chmod 644 "${CONFIG_DIR}/proxy-secret" "${CONFIG_DIR}/proxy-multi.conf"
 
-echo "[5/8] Writing MTProxy runner..."
+echo "[6/8] Writing MTProxy runner..."
 cat > "${RUNNER_BIN}" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -88,7 +96,7 @@ EOF
 
 chmod 755 "${RUNNER_BIN}"
 
-echo "[6/8] Writing systemd service..."
+echo "[7/8] Writing systemd service..."
 cat > "${SYSTEMD_UNIT}" <<EOF
 [Unit]
 Description=Telegram MTProto Proxy
@@ -112,7 +120,7 @@ LimitNOFILE=65535
 WantedBy=multi-user.target
 EOF
 
-echo "[7/8] Starting service..."
+echo "[8/8] Starting service..."
 systemctl daemon-reload
 systemctl enable --now "${SERVICE_NAME}"
 systemctl --no-pager --full status "${SERVICE_NAME}" || true
@@ -128,7 +136,7 @@ TG_LINK=${TG_LINK}
 EOF
 chmod 600 "${CONNECTION_FILE}"
 
-echo "[8/8] Done."
+echo "[9/9] Done."
 echo
 echo "Secret:"
 echo "${MT_SECRET}"
