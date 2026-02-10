@@ -37,3 +37,5 @@ sudo PROXY_PORT=443 STATS_PORT=8888 WORKERS=2 bash install_mtproto.sh
 - Результат (секрет + ссылки): `/etc/mtproxy/connection.txt`
 - Unit: `/etc/systemd/system/mtproxy.service`
 - Запуск: `systemctl status mtproxy`
+
+`/etc/mtproxy/mtproxy.env` читается самим `systemd` (через `EnvironmentFile`), поэтому права `600` для него корректны.

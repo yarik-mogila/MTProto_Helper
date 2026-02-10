@@ -78,8 +78,6 @@ cat > "${RUNNER_BIN}" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
 
-source /etc/mtproxy/mtproxy.env
-
 exec "${MT_PROXY_BIN}" \
   -p "${STATS_PORT}" \
   -H "${PROXY_PORT}" \
